@@ -6,8 +6,11 @@ This is a node server that generates previews from a url.
 
 Screenshot of Google:
 
+![image](https://image-preview-generator.dokku-10.cs.ucsb.edu/?url=https://www.google.com)
+
 ```text
 http://localhost:5000/?url=https://www.google.com
+https://image-preview-generator.dokku-10.cs.ucsb.edu/?url=https://www.google.com
 ```
 
 ### Parameters
