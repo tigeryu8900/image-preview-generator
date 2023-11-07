@@ -4,7 +4,7 @@ FROM ghcr.io/puppeteer/puppeteer:latest
 COPY --chown=pptruser:pptruser package*.json ./
 
 # Install npm production packages
-RUN npm install --omit=dev
+RUN npm install
 
 COPY . .
 
