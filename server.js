@@ -8,7 +8,13 @@ import fs from "node:fs/promises";
     const app = express();
     const port = 5000;
 
-    const browser = await puppeteer.launch({headless: "new"});
+    const browser = await puppeteer.launch({
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox'
+        ],
+        headless: "new"
+    });
 
     app.get("/", async ({query}, res) => {
         query = {

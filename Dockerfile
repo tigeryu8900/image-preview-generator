@@ -1,12 +1,12 @@
-FROM node:latest
+FROM ghcr.io/puppeteer/puppeteer:latest
 
 # Copy package.json and package-lock.json
-COPY package*.json ./
+COPY --chown=pptruser:pptruser package*.json ./
 
 # Install npm production packages
-RUN npm install --production
+RUN npm install --omit=dev
 
-COPY . /opt/app-root/src
+COPY . .
 
 ENV NODE_ENV production
 ENV PORT 5000
