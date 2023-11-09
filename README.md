@@ -17,7 +17,8 @@ https://image-preview-generator.dokku-10.cs.ucsb.edu/?url=https://www.google.com
 
 Other than `url`, supported parameters include all that's supported by Puppeteer's
 [`Viewport`](https://pptr.dev/api/puppeteer.viewport) and
-[`ScreenshotOptions`](https://pptr.dev/api/puppeteer.screenshotoptions).
+[`ScreenshotOptions`](https://pptr.dev/api/puppeteer.screenshotoptions), and `cookie` or `cookies`, which is an object
+or an array of objects that's passed in [`page.setCookie`](https://pptr.dev/api/puppeteer.page.setCookie).
 
 Other than these three parameters, all parameters default to Puppeteer's default parameters:
 

@@ -38,6 +38,28 @@ import fs from "node:fs/promises";
         let path = tempfile({extension: query.type});
         try {
             await page.setViewport(query);
+
+            if (query.cookie !== undefined) {
+                let cookie = JSON.parse(query.cookie);
+                if (cookie instanceof Array) {
+                    await page.goto(query.url);
+                    await page.setCookie(...cookie);
+                } else if (cookie?.name !== undefined && cookie?.value !== undefined) {
+                    await page.goto(query.url);
+                    await page.setCookie(cookie);
+                }
+            }
+            if (query.cookies !== undefined) {
+                let cookies = JSON.parse(query.cookies);
+                if (cookies instanceof Array) {
+                    await page.goto(query.url);
+                    await page.setCookie(...cookies);
+                } else if (cookies?.name !== undefined && cookies?.value !== undefined) {
+                    await page.goto(query.url);
+                    await page.setCookie(cookies);
+                }
+            }
+
             await page.goto(query.url, {
                 waitUntil: "networkidle2"
             });
@@ -46,9 +68,15 @@ import fs from "node:fs/promises";
 
             res.setHeader("Content-Type", mime.getType(query.type));
             res.sendFile(path);
+        } catch (e) {
+            console.error(e);
         } finally {
-            await page.close();
-            await fs.unlink(path);
+            try {
+                await page.close();
+                await fs.unlink(path);
+            } catch (e) {
+                console.error(e);
+            }
         }
     });
 
