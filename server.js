@@ -5,6 +5,8 @@ import tempfile from "tempfile";
 import fs from "node:fs/promises";
 
 (async () => {
+    const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+
     const app = express();
     const port = 5000;
 
@@ -62,6 +64,10 @@ import fs from "node:fs/promises";
             await page.goto(query.url, {
                 waitUntil: "networkidle2"
             });
+
+            if (query.script) {
+                await new AsyncFunction(query.script, "browser", "page")(newBrowser ?? browser, page);
+            }
 
             await page.screenshot({...query, path});
 
