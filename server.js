@@ -36,28 +36,24 @@ import fs from "node:fs/promises";
 
         let page = await browser.newPage();
         let path = tempfile({extension: query.type});
+        let cookies = [];
+        for (let cookieStr of [query.cookie, query.cookies]) {
+            if (cookieStr !== undefined) {
+                let cookie = JSON.parse(cookieStr);
+                if (cookie instanceof Array) {
+                    cookies.push(...cookie);
+                } else if (cookie?.name !== undefined && cookie?.value !== undefined) {
+                    cookies.push(cookie);
+                }
+            }
+        }
+
         try {
             await page.setViewport(query);
 
-            if (query.cookie !== undefined) {
-                let cookie = JSON.parse(query.cookie);
-                if (cookie instanceof Array) {
-                    await page.goto(query.url);
-                    await page.setCookie(...cookie);
-                } else if (cookie?.name !== undefined && cookie?.value !== undefined) {
-                    await page.goto(query.url);
-                    await page.setCookie(cookie);
-                }
-            }
-            if (query.cookies !== undefined) {
-                let cookies = JSON.parse(query.cookies);
-                if (cookies instanceof Array) {
-                    await page.goto(query.url);
-                    await page.setCookie(...cookies);
-                } else if (cookies?.name !== undefined && cookies?.value !== undefined) {
-                    await page.goto(query.url);
-                    await page.setCookie(cookies);
-                }
+            if (cookies.length) {
+                await page.goto(query.url);
+                await page.setCookie(...cookies);
             }
 
             await page.goto(query.url, {
@@ -72,6 +68,7 @@ import fs from "node:fs/promises";
             console.error(e);
         } finally {
             try {
+                if (cookies.length) await page.deleteCookie(...cookies);
                 await page.close();
                 await fs.unlink(path);
             } catch (e) {
