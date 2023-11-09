@@ -8,13 +8,14 @@ import fs from "node:fs/promises";
     const app = express();
     const port = 5000;
 
-    const browser = await puppeteer.launch({
+    const options = {
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox'
         ],
         headless: "new"
-    });
+    };
+    const browser = await puppeteer.launch(options);
 
     app.get("/", async ({query}, res) => {
         query = {
@@ -34,8 +35,6 @@ import fs from "node:fs/promises";
             return;
         }
 
-        let page = await browser.newPage();
-        let path = tempfile({extension: query.type});
         let cookies = [];
         for (let cookieStr of [query.cookie, query.cookies]) {
             if (cookieStr !== undefined) {
@@ -47,6 +46,10 @@ import fs from "node:fs/promises";
                 }
             }
         }
+
+        let newBrowser = cookies.length ? await puppeteer.launch(options) : null;
+        let page = await (newBrowser ?? browser).newPage();
+        let path = tempfile({extension: query.type});
 
         try {
             await page.setViewport(query);
@@ -70,6 +73,7 @@ import fs from "node:fs/promises";
             try {
                 if (cookies.length) await page.deleteCookie(...cookies);
                 await page.close();
+                await newBrowser?.close();
                 await fs.unlink(path);
             } catch (e) {
                 console.error(e);
