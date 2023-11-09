@@ -29,6 +29,10 @@ import fs from "node:fs/promises";
             ...query
         };
 
+        if (query.url64) {
+            query.url = query.url64;
+        }
+
         try {
             new URL(query.url);
         } catch (e) {
