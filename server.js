@@ -30,7 +30,7 @@ import fs from "node:fs/promises";
         };
 
         if (query.url64) {
-            query.url = query.url64;
+            query.url = atob(query.url64);
         }
 
         try {
