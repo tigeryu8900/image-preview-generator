@@ -38,12 +38,17 @@ import fs from "node:fs/promises";
         }
 
         let cookies = [];
-        for (let cookieStr of [query.cookie, query.cookies]) {
-            if (cookieStr !== undefined) {
+        for (let cookieStr of [
+            query.cookie,
+            query.cookies,
+            query.cookie64 ? atob(query.cookie64) : undefined,
+            query.cookies64 ? atob(query.cookies64) : undefined
+        ]) {
+            if (cookieStr) {
                 let cookie = JSON.parse(cookieStr);
                 if (cookie instanceof Array) {
                     cookies.push(...cookie);
-                } else if (cookie?.name !== undefined && cookie?.value !== undefined) {
+                } else if (cookie?.name && cookie?.value) {
                     cookies.push(cookie);
                 }
             }
@@ -67,6 +72,9 @@ import fs from "node:fs/promises";
 
             if (query.script) {
                 await new AsyncFunction("browser", "page", query.script)(newBrowser ?? browser, page);
+            }
+            if (query.script64) {
+                await new AsyncFunction("browser", "page", atob(query.script))(newBrowser ?? browser, page);
             }
 
             await page.screenshot({...query, path});
