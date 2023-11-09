@@ -78,7 +78,7 @@ import fs from "node:fs/promises";
                 await new AsyncFunction("browser", "page", query.script)(newBrowser ?? browser, page);
             }
             if (query.script64) {
-                await new AsyncFunction("browser", "page", atob(query.script))(newBrowser ?? browser, page);
+                await new AsyncFunction("browser", "page", atob(query.script64))(newBrowser ?? browser, page);
             }
 
             await page.screenshot({...query, path});
