@@ -70,14 +70,18 @@ import fs from "node:fs/promises";
         } catch (e) {
             console.error(e);
         } finally {
-            try {
-                if (cookies.length) await page.deleteCookie(...cookies);
-                await page.close();
-                await newBrowser?.close();
-                await fs.unlink(path);
-            } catch (e) {
-                console.error(e);
-            }
+            new Promise(async resolve => {
+                try {
+                    if (cookies.length) await page.deleteCookie(...cookies);
+                    await page.close();
+                    await newBrowser?.close();
+                    await fs.unlink(path);
+                } catch (e) {
+                    console.error(e);
+                } finally {
+                    resolve();
+                }
+            });
         }
     });
 
