@@ -66,7 +66,7 @@ import fs from "node:fs/promises";
             });
 
             if (query.script) {
-                await new AsyncFunction(query.script, "browser", "page")(newBrowser ?? browser, page);
+                await new AsyncFunction("browser", "page", query.script)(newBrowser ?? browser, page);
             }
 
             await page.screenshot({...query, path});
@@ -75,6 +75,12 @@ import fs from "node:fs/promises";
             res.sendFile(path);
         } catch (e) {
             console.error(e);
+            res.status(500);
+            if (e instanceof Error) {
+                res.send(e.stack);
+            } else {
+                res.send(e?.message || e?.name || e);
+            }
         } finally {
             new Promise(async resolve => {
                 try {
@@ -83,7 +89,7 @@ import fs from "node:fs/promises";
                     await newBrowser?.close();
                     await fs.unlink(path);
                 } catch (e) {
-                    console.error(e);
+                    console.error(JSON.stringify(e));
                 } finally {
                     resolve();
                 }
